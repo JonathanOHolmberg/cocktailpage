@@ -10,12 +10,13 @@ const SearchBar = ({ onSearch }) => {
   return (
     <div>
       <input
+      className='px-4 rounded border border-slate-50 mr-4'
         type="text"
         placeholder="Enter cocktail name"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button onClick={handleSearch}>Search</button>
+      <button className="px-8 rounded-bl-2xl border border-slate-50 text-slate-50 mr-4" onClick={handleSearch}>Search</button>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const App = () => {
   const [searchResult, setSearchResult] = useState([]);
-  const [randomCocktail, setRandomCocktail] = useState();
+  const [selectedCocktail, setSelectedCocktail] = useState(null);
   const [showRandomCocktail, setShowRandomCocktail] = useState(true);
 
   const handleSearch = (searchTerm) => {
@@ -13,6 +13,7 @@ const App = () => {
       .get(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${searchTerm}`)
       .then((response) => {
         setSearchResult(response.data.drinks || []);
+        setSelectedCocktail(null);
         setShowRandomCocktail(false);
       })
       .catch((error) => {
@@ -24,47 +25,57 @@ const App = () => {
     axios
       .get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
       .then((response) => {
-        setRandomCocktail(response.data.drinks[0]);
+        setSelectedCocktail(response.data.drinks[0]);
+        setShowRandomCocktail(true);
       })
       .catch((error) => {
         console.error('Error fetching cocktail:', error);
       });
   }, []);
 
+  const handleCocktailClick = (cocktail) => {
+    setSelectedCocktail(cocktail);
+    setShowRandomCocktail(false);
+  };
+
   return (
-    <div className="h-screen">
-      <div className="bg-gray-100 p-4 border border-black rounded-lt-2xl rounded-bl-2xl">
-        <div className="grid grid-cols-3">
-          <div className="col-span-1">
+    <div className="w-full h-full bg-black">
+      <div className="mb-6 p-1 bg-black p-4 border border-black rounded-bl-2xl">
+        <div className="p-1 bg-black grid grid-cols-3 border border-black rounded-bl-2xl">
+          <div className="p-1 rounded-bl-2xl col-span-1">
             <SearchBar onSearch={handleSearch} />
           </div>
           <div className="col-span-2">
-            <h2 className="text-2xl font-bold">Cocktail Page</h2>
+            <h2 className="text-2xl font-bold text-slate-50 tracking-wider">Cocktail Page</h2>
           </div>
         </div>
       </div>
-      <div className="flex flex-col h-full p-4 border border-black rounded-tr-2xl rounded-br-2xl">
+      <div className="flex p-4 border border-black rounded-bl-2xl bg-slate-900">
         {showRandomCocktail ? (
-          randomCocktail && (
-            <div>
-              <h3 className="text-xl font-semibold">{randomCocktail.strDrink}</h3>
-              <img src={randomCocktail.strDrinkThumb} alt={randomCocktail.strDrink} className="mt-4 rounded-lg" />
-              <table className="mt-4">
-                <thead>
-                  <tr>
-                    <th>Ingredients</th>
-                    <th>Measures</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {renderIngredientsTable(randomCocktail)}
-                </tbody>
-              </table>
-              <p className="mt-4">{randomCocktail.strInstructions}</p>
+          selectedCocktail && (
+            <div className='flex flex-row'>
+              <div>
+                <h3 className="text-xl font-semibold bg-black text-slate-50 px-4 flex justify-center rounded-bl-2xl border border-slate-50">{selectedCocktail.strDrink}</h3>
+                <img src={selectedCocktail.strDrinkThumb} alt={selectedCocktail.strDrink} className="mt-4 rounded-lg border border-slate-50" />
+              </div>
+              <div>
+                <table className="m-4 mt-12 border border-black rounded-bl-2xl px-4 w-full bg-black text-slate-50 border border-slate-50">
+                  <thead className="m-4 border border-black rounded-bl-2xl p-4 w-full mr-4 border border-slate-50 pr-6">
+                    <tr className='mr-4'>
+                      <th className="py-4 font-semibold border border-slate-50">Ingredients</th>
+                      <th className="py-4 font-semibold border border-slate-50">Measures</th>
+                    </tr>
+                  </thead>
+                  <tbody className="m-4 border border-black rounded-bl-2xl px-4 mr-4">
+                    {renderIngredientsTable(selectedCocktail)}
+                  </tbody>
+                </table>
+                <p className="mx-4 border border-black rounded-bl-2xl p-4 h-fill font-semibold bg-black text-slate-50">{selectedCocktail.strInstructions}</p>
+              </div>
             </div>
           )
         ) : (
-          <SearchResults searchResult={searchResult} />
+          <SearchResults searchResult={searchResult} onCocktailClick={handleCocktailClick} />
         )}
       </div>
     </div>
@@ -91,9 +102,9 @@ const renderIngredientsTable = (cocktail) => {
   }
 
   return ingredientsAndMeasures.map((item, index) => (
-    <tr key={index}>
-      <td>{item.ingredient}</td>
-      <td>{item.measure}</td>
+    <tr key={index} className='ml-2 px-4'>
+      <td className='ml-2 px-4'>{item.ingredient}</td>
+      <td className='ml-2 px-4'>{item.measure}</td>
     </tr>
   ));
 };
