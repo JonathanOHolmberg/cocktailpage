@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from './search';
 import SearchResults from './searchresults';
 import axios from 'axios';
-import './App.css';
 
 const App = () => {
   const [searchResult, setSearchResult] = useState([]);
@@ -33,38 +32,41 @@ const App = () => {
   }, []);
 
   return (
-    <div>
-      <div className="navbar">
-        <div className="navbar-column">
-          <SearchBar onSearch={handleSearch} />
-        </div>
-        <div className="navbar-column">
-          <h2>Cocktail Page</h2>
-        </div>
-        <div className="navbar-column"></div>
-      </div>
-      {showRandomCocktail ? (
-        randomCocktail && (
-          <div>
-            <h3>{randomCocktail.strDrink}</h3>
-            <img src={randomCocktail.strDrinkThumb} alt={randomCocktail.strDrink} />
-            <table>
-              <thead>
-                <tr>
-                  <th>Ingredient</th>
-                  <th>Measure</th>
-                </tr>
-              </thead>
-              <tbody>
-                {renderIngredientsTable(randomCocktail)}
-              </tbody>
-            </table>
-            <p>{randomCocktail.strInstructions}</p>
+    <div className="h-screen">
+      <div className="bg-gray-100 p-4 border border-black rounded-lt-2xl rounded-bl-2xl">
+        <div className="grid grid-cols-3">
+          <div className="col-span-1">
+            <SearchBar onSearch={handleSearch} />
           </div>
-        )
-      ) : (
-        <SearchResults searchResult={searchResult} />
-      )}
+          <div className="col-span-2">
+            <h2 className="text-2xl font-bold">Cocktail Page</h2>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col h-full p-4 border border-black rounded-tr-2xl rounded-br-2xl">
+        {showRandomCocktail ? (
+          randomCocktail && (
+            <div>
+              <h3 className="text-xl font-semibold">{randomCocktail.strDrink}</h3>
+              <img src={randomCocktail.strDrinkThumb} alt={randomCocktail.strDrink} className="mt-4 rounded-lg" />
+              <table className="mt-4">
+                <thead>
+                  <tr>
+                    <th>Ingredients</th>
+                    <th>Measures</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {renderIngredientsTable(randomCocktail)}
+                </tbody>
+              </table>
+              <p className="mt-4">{randomCocktail.strInstructions}</p>
+            </div>
+          )
+        ) : (
+          <SearchResults searchResult={searchResult} />
+        )}
+      </div>
     </div>
   );
 };
